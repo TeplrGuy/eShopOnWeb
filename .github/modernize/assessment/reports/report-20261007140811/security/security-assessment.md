@@ -1,6 +1,6 @@
 # Security Assessment Report
 
-**Generated:** 2026-10-07T14:18:30.485679Z
+**Generated:** 2026-10-07T14:22:53.654102Z
 
 ## Summary
 
@@ -214,11 +214,11 @@ The timer callback registered in ToastService.SetCountdown runs independently of
 - **Category:** Credentials & Secrets
 - **Severity:** optional
 - **Story Points:** 5
-- **Files:** src/ApplicationCore/Constants/AuthorizationConstants.cs
+- **Files:** src/ApplicationCore/Constants/AuthorizationConstants.cs, src/Infrastructure/Identity/AppIdentityDbContextSeed.cs, src/Web/appsettings.Docker.json, src/PublicApi/appsettings.Docker.json, docker-compose.yml
 
 The product contains a hard-coded password, which it uses for its own inbound authentication or for outbound communication to external components.
 
-AuthorizationConstants.DEFAULT_PASSWORD is a hard-coded password and is passed to UserManager.CreateAsync for both seeded accounts in src/Infrastructure/Identity/AppIdentityDbContextSeed.cs:21,25. The fixed value is not reproduced here.
+The repository contains a fixed default password used to create seeded accounts in AppIdentityDbContextSeed, and checked-in Docker configuration contains SQL Server passwords in the compose environment and Docker connection strings. Values are omitted.
 
 ### CWE-321: Use of Hard-coded Cryptographic Key
 - **Category:** Credentials & Secrets
@@ -234,8 +234,8 @@ AuthorizationConstants.JWT_SECRET_KEY is a fixed cryptographic signing key used 
 - **Category:** Credentials & Secrets
 - **Severity:** optional
 - **Story Points:** 5
-- **Files:** src/ApplicationCore/Constants/AuthorizationConstants.cs, src/Infrastructure/Identity/AppIdentityDbContextSeed.cs, src/Web/key-768c1632-cf7b-41a9-bb7a-bff228ae8fba.xml
+- **Files:** src/ApplicationCore/Constants/AuthorizationConstants.cs, src/Infrastructure/Identity/AppIdentityDbContextSeed.cs, src/Web/appsettings.Docker.json, src/PublicApi/appsettings.Docker.json, docker-compose.yml, src/Web/key-768c1632-cf7b-41a9-bb7a-bff228ae8fba.xml
 
 The product contains hard-coded credentials, such as a password or cryptographic key.
 
-The repository contains a fixed password used when seeding accounts, a fixed JWT signing key, and unencrypted ASP.NET Data Protection key material. The credential and key values are omitted.
+The repository contains a fixed seeded-account password, SQL Server passwords in checked-in Docker settings, a fixed JWT signing key, and unencrypted ASP.NET Data Protection key material. Credential and key values are omitted.

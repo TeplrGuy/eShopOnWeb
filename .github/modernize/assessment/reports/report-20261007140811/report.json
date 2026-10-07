@@ -5990,9 +5990,13 @@
       "description": "The product contains a hard-coded password, which it uses for its own inbound authentication or for outbound communication to external components.",
       "evidence": {
         "files": [
-          "src/ApplicationCore/Constants/AuthorizationConstants.cs"
+          "src/ApplicationCore/Constants/AuthorizationConstants.cs",
+          "src/Infrastructure/Identity/AppIdentityDbContextSeed.cs",
+          "src/Web/appsettings.Docker.json",
+          "src/PublicApi/appsettings.Docker.json",
+          "docker-compose.yml"
         ],
-        "explanation": "AuthorizationConstants.DEFAULT_PASSWORD is a hard-coded password and is passed to UserManager.CreateAsync for both seeded accounts in src/Infrastructure/Identity/AppIdentityDbContextSeed.cs:21,25. The fixed value is not reproduced here."
+        "explanation": "The repository contains a fixed default password used to create seeded accounts in AppIdentityDbContextSeed, and checked-in Docker configuration contains SQL Server passwords in the compose environment and Docker connection strings. Values are omitted."
       },
       "storyPoint": 5
     },
@@ -6021,9 +6025,12 @@
         "files": [
           "src/ApplicationCore/Constants/AuthorizationConstants.cs",
           "src/Infrastructure/Identity/AppIdentityDbContextSeed.cs",
+          "src/Web/appsettings.Docker.json",
+          "src/PublicApi/appsettings.Docker.json",
+          "docker-compose.yml",
           "src/Web/key-768c1632-cf7b-41a9-bb7a-bff228ae8fba.xml"
         ],
-        "explanation": "The repository contains a fixed password used when seeding accounts, a fixed JWT signing key, and unencrypted ASP.NET Data Protection key material. The credential and key values are omitted."
+        "explanation": "The repository contains a fixed seeded-account password, SQL Server passwords in checked-in Docker settings, a fixed JWT signing key, and unencrypted ASP.NET Data Protection key material. Credential and key values are omitted."
       },
       "storyPoint": 5
     }
