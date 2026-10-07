@@ -75,7 +75,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": [
         {
@@ -180,7 +181,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": [
         {
@@ -1051,7 +1053,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": []
     },
@@ -1069,7 +1072,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": [
         {
@@ -1776,7 +1780,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": [
         {
@@ -2655,7 +2660,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": []
     },
@@ -2673,7 +2679,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": [
         {
@@ -3272,7 +3279,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": [
         {
@@ -3762,7 +3770,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": [
         {
@@ -3824,7 +3833,8 @@
         ],
         "tools": [
           "MSBuild"
-        ]
+        ],
+        "repo": "eShopOnWeb"
       },
       "incidents": [
         {
@@ -5802,5 +5812,56 @@
       ],
       "labels": []
     }
-  }
+  },
+  "security": [
+    {
+      "id": "CWE-321",
+      "title": "Use of Hard-coded Cryptographic Key",
+      "category": "Credentials & Secrets",
+      "severity": "potential",
+      "description": "The product uses a hard-coded, unchangeable cryptographic key.",
+      "evidence": {
+        "files": [
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/ApplicationCore/Constants/AuthorizationConstants.cs:11",
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/Infrastructure/Identity/IdentityTokenClaimService.cs:26",
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/PublicApi/Program.cs:54",
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/PublicApi/CatalogItemEndpoints/CreateCatalogItemEndpoint.cs:30"
+        ],
+        "explanation": "HIGH impact; confidence 9/10. AuthorizationConstants embeds the JWT signing key as a source constant. IdentityTokenClaimService.GetTokenAsync uses it for HMAC-SHA256 signing at lines 26 and 41. PublicApi startup uses the same constant as its bearer-token verification key at lines 54-69, without a development-only guard or configurable replacement. An attacker who knows the source can sign a JWT containing the administrator role and a future expiration, then access administrator catalog mutation endpoints. The key is an active trust anchor, not merely unused example data. Its literal value is intentionally omitted. Verified through static signing, validation, and authorization data flow; no live forged token was submitted."
+      },
+      "storyPoint": 5
+    },
+    {
+      "id": "CWE-798",
+      "title": "Use of Hard-coded Credentials",
+      "category": "Credentials & Secrets",
+      "severity": "optional",
+      "description": "The product contains hard-coded credentials, such as a password or cryptographic key.",
+      "evidence": {
+        "files": [
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/ApplicationCore/Constants/AuthorizationConstants.cs:11",
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/Infrastructure/Identity/IdentityTokenClaimService.cs:26",
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/PublicApi/Program.cs:54"
+        ],
+        "explanation": "HIGH impact; confidence 9/10. The hard-coded JWT signing credential is also an instance of CWE-798. IdentityTokenClaimService signs with the source constant and PublicApi validates bearer tokens with it. Source knowledge therefore permits forging an administrator token without authenticating. This is the same underlying vulnerability as CWE-321, recorded separately because the checklist requires one result for each rule; deduplicate it when counting unique vulnerabilities. Literal signing-key and sample-password values are intentionally omitted."
+      },
+      "storyPoint": 5
+    },
+    {
+      "id": "CWE-99",
+      "title": "Improper Control of Resource Identifiers ('Resource Injection')",
+      "category": "Injection Attacks",
+      "severity": "potential",
+      "description": "The product receives input from an upstream component, but it does not restrict or incorrectly restricts the input before it is used as an identifier for a resource that may be outside the intended sphere of control.",
+      "evidence": {
+        "files": [
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/Web/Controllers/OrderController.cs:31",
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/Web/Features/OrderDetails/GetOrderDetailsHandler.cs:21",
+          "/home/runner/work/eShopOnWeb/eShopOnWeb/src/ApplicationCore/Specifications/OrderWithItemsByIdSpec.cs:11"
+        ],
+        "explanation": "HIGH impact; confidence 9/10. OrderController.Detail accepts an attacker-controlled numeric orderId at /Order/Detail/{orderId} and supplies the authenticated username to GetOrderDetails. GetOrderDetailsHandler.Handle ignores that username and retrieves the order with OrderWithItemsByIdSpec, whose only restriction is order.Id == orderId. No owner authorization occurs before handler lines 29-43 return order items, shipping address, and total. Any authenticated customer can select another customer's existing order ID and receive its details. Authentication alone does not restrict the resource to its owner. Verified by static tracing of the controller, request, handler, and specification; no live exploit was executed."
+      },
+      "storyPoint": 3
+    }
+  ]
 }
